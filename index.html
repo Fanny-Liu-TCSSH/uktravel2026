@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 英倫母子三人深度自由行隨身手冊</title>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .tab-active { border-bottom: 4px solid #c8102e; color: #00247d; font-weight: bold; }
+        .tab-inactive { color: #64748b; }
+        .british-navy-text { color: #00247d; }
+        .british-navy-bg { background-color: #00247d; }
+        .british-crimson-text { color: #c8102e; }
+        .british-crimson-bg { background-color: #c8102e; }
+        .border-british-blue { border-color: rgba(0, 36, 125, 0.15); }
+        .border-british-red { border-color: rgba(200, 16, 46, 0.15); }
+        @keyframes popIn {
+            0% { transform: scale(0.97); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: popIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const flightData = {
+            outbound: {
+                flight: "中華航空 CI 81 (Boeing 777/A350)",
+                route: "桃園機場 (TPE) T1 → 倫敦希斯洛 (LHR) T3",
+                time: "7/04 (六) 08:50 起飛 → 7/04 (六) 16:30 抵達",
+                seats: [
+                    { name: "劉芳君 (LIU FANGCHUN Ms)", seat: "32C" },
+                    { name: "李育丞 (LEE YUCHENG Mr)", seat: "31A" },
+                    { name: "李元媛 (LEE YUANYUAN Ms)", seat: "32A" }
+                ],
+                baggage: "每人託運 2PC 行李，單件上限 23公斤"
+            },
+            inbound: {
+                flight: "中華航空 CI 82 (Boeing 777/A350)",
+                route: "倫敦希斯洛 (LHR) T3 → 桃園機場 (TPE) T1",
+                time: "7/20 (一) 21:10 起飛 → 7/21 (二) 18:05 抵達",
+                seats: [
+                    { name: "劉芳君 (LIU FANGCHUN Ms)", seat: "31E" },
+                    { name: "李育丞 (LEE YUCHENG Mr)", seat: "31D" },
+                    { name: "李元媛 (LEE YUANYUAN Ms)", seat: "31G" }
+                ],
+                baggage: "每人託運 2PC 行李，單件上限 23公斤"
+            }
+        };
+
+        const accommodationData = [
+            {
+                date: "7/04 (六) - 1晚",
+                name: "The New Inn Hotel",
+                address: "38-39 Guild St, Stratford-upon-Avon CV37 6QY",
+                details: "自駕第一晚住宿，靠近莎翁故鄉舊城中心。"
+            },
+            {
+                date: "7/05 (日) - 1晚",
+                name: "Hotel Indigo - Chester by IHG",
+                address: "20-24 Grosvenor Park Rd, Chester CH1 1QQ",
+                details: "鄰近契斯特羅馬古城牆，設計高雅精緻。"
+            },
+            {
+                date: "7/06 (一) - 1晚",
+                name: "Windermere Park B&B inc free off-site health club",
+                address: "Windermere Park, Windermere LA23 2ND",
+                details: "傳統英式溫馨湖區民宿，附美味早餐與免費外場俱樂部健體體驗。"
+            },
+            {
+                date: "7/07 (二) - 1晚",
+                name: "Novotel Edinburgh Centre",
+                address: "80 Lauriston Pl, Edinburgh EH3 9DE",
+                details: "位於愛丁堡舊城區核心，附設室內泳池與寬敞房型。"
+            },
+            {
+                date: "7/08 (三) - 1晚",
+                name: "Novotel Newcastle Airport",
+                address: "Ponteland Rd, Kenton, Newcastle upon Tyne NE3 3HZ",
+                details: "位置便利，方便翌日清晨南下前往約克。"
+            },
+            {
+                date: "7/09 (四) - 1晚",
+                name: "St James Hotel, Nottingham",
+                address: "1 Rutland St, Nottingham NG1 6FL",
+                details: "羅賓漢故鄉精品設計飯店，緊鄰諾丁漢城堡。"
+            },
+            {
+                date: "7/10 (五) - 1晚",
+                name: "Holiday Inn Express – Bicester by IHG",
+                address: "Neunkirchen Way, Bicester OX26 2AZ",
+                details: "鄰近比斯特購物村 (Bicester Village)，血拼後最佳落腳點。"
+            },
+            {
+                date: "7/11 (六) - 1晚",
+                name: "Leonard London Heathrow Airport",
+                address: "Heathrow Airport, Bath Rd, Hounslow TW6 2AL",
+                details: "希斯洛機場旁便捷中轉飯店，利於辦理還車手續。"
+            },
+            {
+                date: "7/12 (日) - 7/20 (一) 共8晚",
+                name: "ibis London City – Shoreditch",
+                address: "5 Commercial St, London E1 6BF (鄰近 Aldgate East 站)",
+                details: "連續入住 8 晚。東倫敦潮流心臟地帶，生活便利，交通四通八達。"
+            }
+        ];
+
+        const ticketData = [
+            {
+                date: "7/12 (日)",
+                name: "倫敦塔門票 (Tower of London Admission)",
+                provider: "Historic Royal Palaces",
+                ref: "DVOG51UKVPZI3",
+                time: "10:30-11:00 登入時段",
+                location: "Tower of London, EC3N 4AB",
+                details: "1位成人票 + 2位青年票。總價 £74.00。出示條碼直接掃碼進場。"
+            },
+            {
+                date: "7/12 (日)",
+                name: "泰晤士河遊船 (River Cruise) & 倫敦眼 (London Eye)",
+                provider: "Merlin/London Eye",
+                ref: "Order ID: 116083612 (Cruise) / 116083613 (Eye)",
+                time: "15:45 遊船 / 18:00 倫敦眼登頂",
+                location: "Riverside Building, County Hall, Westminster Bridge Rd",
+                details: "Adult (135296898), 2x Child (135296899/135296901)。無需列印，出示手機 PDF 即可。"
+            },
+            {
+                date: "7/13 (一)",
+                name: "哈利波特影城導覽 (含往返大巴接送)",
+                provider: "Premium Tours",
+                ref: "3CANW18E",
+                time: "09:00 集合 / 09:15 發車",
+                location: "Victoria Coach Station (164 Buckingham Palace Rd, SW1W 9TP)",
+                details: "1位成人 + 2位青年。影城內嚴格限制不可攜帶熱食與熱飲上大巴。"
+            },
+            {
+                date: "7/14 (二)",
+                name: "格林威治天文臺 & 劍橋大學一日遊 (含康河撐篙與國王學院門票)",
+                provider: "Klook (CKT)",
+                ref: "XNJ075421",
+                time: "08:10 集合 / 08:30 發車",
+                location: "Victoria Station (Stop 11) 火車站外公交站牌, SW1W 9LN",
+                details: "含皇家天文臺門票、康河撐篙、國王學院門票、中式午餐、中文導遊深度講解。"
+            },
+            {
+                date: "7/15 (三)",
+                name: "倫敦《歌劇魅影》音樂劇門票",
+                provider: "Klook (Encore Tickets)",
+                ref: "QCV415375",
+                time: "14:00 抵達 / 14:30 開演",
+                location: "國王陛下劇院 (His Majesty's Theatre - SW1Y 4QL)",
+                details: "座位：一樓 Stalls 區, Row T, 席位 30, 31, 32。演出長度 150 分鐘。持電子條碼直接掃描進場。"
+            },
+            {
+                date: "7/16 (四)",
+                name: "巨石陣 & 巴斯羅馬浴場一日遊",
+                provider: "Klook (Premium Tours)",
+                ref: "CMU636083 / 憑證碼: SV4H4SNQ",
+                time: "08:00 集合 / 08:15 發車",
+                location: "維多利亞客運總站 18 號門 (Gate 18, Victoria Coach Station)",
+                details: "含巨石陣門票、巴斯羅馬浴場門票與中文語音導覽。回程預計 19:30 於 Gloucester Road 站下車。"
+            },
+            {
+                date: "7/18 (六)",
+                name: "空中花園免費觀景台 (Sky Garden)",
+                provider: "Sky Garden Booking",
+                ref: "20260622-67793502 (已確認免費票券)",
+                time: "19:00 登頂觀景",
+                location: "20 Fenchurch St, London EC3M 8AF",
+                details: "金融城 Walkie Talkie 大樓 35 樓，需出示附相片之個人身份證件 (護照) 以供查驗。"
+            },
+            {
+                date: "7/18 (六)",
+                name: "倫敦《悲慘世界》音樂劇門票",
+                provider: "Delfont Mackintosh Theatres",
+                ref: "T06126080581",
+                time: "14:00 抵達 / 14:30 開演",
+                location: "桑德海姆劇院 (Sondheim Theatre - W1D 6BA)",
+                details: "座位：二樓精選首排 Dress Circle 區, Row H, 席位 H6, H7, H8。直接出示 PDF 憑證掃碼進場。"
+            }
+        ];
+
+        const itineraryData = [
+            {
+                day: 1, date: "7/4 (六)", area: "入境與自駕", title: "啟程與抵達莎翁故鄉",
+                highlights: "順利抵達英國，自駕第一站前往充滿復古風情的莎士比亞故鄉 Stratford-upon-Avon。",
+                accommodation: "The New Inn Hotel",
+                mapLink: "https://www.google.com/maps/search/Stratford-upon-Avon",
+                svgType: "cottage",
+                images: [
+                    { title: "Stratford 經典街景", url: "https://docs.google.com/drawings/d/e/2PACX-1vSrjv-HaCFKWfv0fKVL9mjQ4lE7JxwVGqC7n8NqVugBCahbH_hmbJUAy13m5vdHk16uYMu5u4aC1Lto/pub?w=960&h=720" }
+                ],
+                historyTitle: "✍️ 莎翁與雅芳河畔的都鐸黑白木構建築",
+                historyIntro: "Stratford-upon-Avon 是保存完好的都鐸王朝市鎮。莎士比亞在此出生並度過童年。小鎮隨處可見風格獨特的「半木構建築（Half-timbered buildings）」，白牆上縱橫交錯著黑色橡木橫樑，雅芳河上的天鵝與岸邊的柳樹，構成經典的英式田園風光。",
+                timeline: [
+                    { time: "08:50", event: "華航 CI 81 班機由桃園機場第一航廈起飛（座位: 32C, 31A, 32A）", type: "transport" },
+                    { time: "16:30", event: "抵達倫敦希斯洛機場 Terminal 3，領取行李並辦理入境查驗", type: "alert" },
+                    { time: "18:30", event: "步行至租車櫃檯辦理取車，熟悉右駕與英式交通規則", type: "transport" },
+                    { time: "20:00", event: "行經 M40 高速公路休息站享用簡單晚餐，晚間抵達 Stratford 飯店辦理入住", type: "food" }
+                ]
+            },
+            {
+                day: 2, date: "7/5 (日)", area: "英格蘭中部", title: "大文豪的足跡與羅馬要塞",
+                highlights: "探訪莎士比亞住所與都鐸老屋街區，下午前往擁有不列顛完整中世紀城牆的 Chester。",
+                accommodation: "Hotel Indigo - Chester by IHG",
+                mapLink: "https://www.google.com/maps/search/Chester+UK",
+                svgType: "castle",
+                images: [
+                    { title: "Stratford 老屋景色", url: "https://docs.google.com/drawings/d/e/2PACX-1vQWW4am1Soa8zSnFT8yKhnOk9wEVBl1F6m4Yir127Ae1On30Pzqzh22kumjuIQac7HWnFBKXcLqdNe8/pub?w=960&h=720" }
+                ],
+                historyTitle: "🏛️ 契斯特城牆與雙層商鋪街 (The Rows)",
+                historyIntro: "Chester 原為羅馬帝國在不列顛建立的防禦軍事要塞，擁有英格蘭保存最完整的古羅馬城牆（Chester Roman Walls）。古城中心最醒目的地標是「契斯特排屋 (The Rows)」，其一、二樓各自擁有獨立的拱廊通道與店鋪，為中世紀獨一無二的建築格局。",
+                timeline: [
+                    { time: "09:00", event: "飯店享用早餐，隨後在 Stratford-upon-Avon 舊城區與河畔步行遊覽", type: "activity" },
+                    { time: "11:00", event: "參觀莎士比亞誕生地（Shakespeare's Birthplace）親睹中世紀文學巨匠足跡", type: "activity" },
+                    { time: "14:00", event: "開車前往 Chester（車程約 2 小時 19 分鐘）", type: "transport" },
+                    { time: "16:30", event: "漫步黑白相間的柔思雙層商店街 (The Rows) ，欣賞獨特的中世紀工法建築", type: "activity" }
+                ]
+            },
+            {
+                day: 3, date: "7/6 (一)", area: "自駕段", title: "Chester到Lake District",
+                highlights: "深度探訪羅馬要塞 Chester 歷史古蹟、走訪全英最完整的中世紀城牆，午後驅車前往溫德米爾湖區。",
+                accommodation: "Windermere Park B&B inc free off-site health club",
+                mapLink: "https://www.google.com/maps/search/Chester+Cathedral+UK",
+                svgType: "castle",
+                images: [
+                    { title: "Chester City Walls", url: "https://docs.google.com/drawings/d/e/2PACX-1vQ_9CdbbBl3VMEZpouyIGXF_oryFAMNP1yTbHne5GDF9fA8kImMuCe81Mc1hvTpmv5Aqd8piBK3JmqU/pub?w=960&h=720" }
+                ],
+                historyTitle: "🏛️ 羅馬要塞契斯特的四大核心印記",
+                historyIntro: "契斯特建於羅馬帝國時代（西元70-80年）。如今擁長達3.2公里、全英保存最完整的羅馬與中世紀城牆系統。一級古蹟「契斯特大教堂」是一座宏偉的哥德式大聖堂。而地標「東門鐘塔 (Eastgate Clock)」建於1897年，是為慶祝維多利亞女王登基60週年而建，熱門程度僅次於大笨鐘。露天競技場則是不列顛現存最大的羅馬環形遺址。",
+                timeline: [
+                    { time: "08:30", event: "於 Hotel Indigo 享用精緻早餐並辦理退房", type: "food" },
+                    { time: "09:30", event: "登上切斯特城牆 (Chester City Walls) 漫步，探訪哥德式切斯特座堂與熱門東門鐘塔 (Eastgate Clock)", type: "activity" },
+                    { time: "11:30", event: "走訪現存最大的露天環形競技場 (Chester Roman Amphitheatre) 遺址", type: "activity" },
+                    { time: "14:00", event: "發車前往湖區溫德米爾 Windermere (車程約 1 小時 51 分鐘)", type: "transport" },
+                    { time: "16:30", event: "抵達並入住 Windermere Park B&B，全家人可免費體驗附屬的 off-site 健身健康俱樂部設施", type: "alert" }
+                ]
+            },
+            {
+                day: 4, date: "7/7 (二)", area: "蘇格蘭", title: "湖區Lake District 到愛丁堡Edinburgh",
+                highlights: "早晨搭乘經典遊船與復古蒸汽火車慢遊湖區，隨後探訪彼得兔繪本館，午後開車抵達愛丁堡。",
+                accommodation: "Novotel Edinburgh Centre",
+                mapLink: "https://www.google.com/maps/search/Novotel+Edinburgh+Centre",
+                svgType: "boat",
+                images: [
+                    { title: "湖區風景", url: "https://docs.google.com/drawings/d/e/2PACX-1vQMKxwCqKhQP9ObdpaAkMwNFDr_XW-jJnqO4LqOl6AFW-FNG7qMeEFH8Gb7AiTFkuONI6B5HL7a5A2q/pub?w=928&h=601" },
+                    { title: "彼得兔童話世界", url: "https://docs.google.com/drawings/d/e/2PACX-1vT9SuCdjxW4OjwEJdcNVEUI7i1rzaKvuzpDaIDecNYHHx9cz14_bpVb5-fnU8EMbNjGB7RcBWs-xHL_/pub?w=960&h=720" }
+                ],
+                historyTitle: "🐰 碧翠絲・波特與湖區自然景觀保護",
+                historyIntro: "溫德米爾湖區是英格蘭最大的國家公園。繪本畫家波特搬到此地務農後「創造」出經典的彼得兔。她一生的版稅及土地皆捐贈予國家信託組織，造就這片美麗、未受破壞的英式鄉村綠土。",
+                timeline: [
+                    { time: "08:30", event: "B&B 享用熱騰騰英式早餐，隨後辦理退房", type: "food" },
+                    { time: "09:15", event: "從 Bowness-on-Windermere 碼頭出發，搭乘黃線遊船前往 Lakeside 欣賞群山湖泊景色", type: "activity" },
+                    { time: "10:15", event: "抵達 Lakeside 站轉乘傳統 Lakeside & Haverthwaite 蒸汽火車去 Haverthwaite，隨後原路折返回 Bowness", type: "transport" },
+                    { time: "12:30", event: "漫步彼得兔博物館 (The World of Beatrix Potter)，在波特筆下的溫馨花園拍照", type: "activity" },
+                    { time: "14:30", event: "開車啟程跨越蘇格蘭與英格蘭邊界，一路北上前往愛丁堡（車程約 3 小時 14 分鐘）", type: "transport" },
+                    { time: "18:00", event: "順利抵達愛丁堡舊城核心 Novotel Edinburgh Centre 飯店辦理入住，晚餐於附近享用", type: "food" }
+                ]
+            },
+            {
+                day: 5, date: "7/8 (三)", area: "北英格蘭", title: "喬治式古典建築之美",
+                highlights: "感受北英格蘭工業與文化重鎮紐卡斯爾的街道美學與泰恩河鋼鐵大橋活力。",
+                accommodation: "Novotel Newcastle Airport",
+                mapLink: "https://www.google.com/maps/search/Grey+Street+Newcastle",
+                svgType: "bridge",
+                images: [
+                    { title: "Grey St Newcastle", url: "https://docs.google.com/drawings/d/e/2PACX-1vQTgFH54yyGFC7zmRrd8qZ7XgGA4sM7JIwCE8rlTWt5Ag3wjPvDEmh_kfZEWYBiSMEFXGDM5uGcmPrR/pub?w=960&h=720" }
+                ],
+                historyTitle: "🌉 紐卡斯爾：鐵路樞紐與完整的喬治式街區",
+                historyIntro: "泰恩河畔紐卡斯爾在中世紀時是北英格蘭最重要的防禦要塞。這座城市於 19 世紀進行了大刀闊斧的都市重劃，主街「格雷街 (Grey Street)」被譽為英國最美麗的街道，其古典的喬治式建築保存極為完整。",
+                timeline: [
+                    { time: "10:00", event: "於愛丁堡王子街（Princes Street）進行最後一場蘇格蘭傳統呢絨與紀念品採購", type: "activity" },
+                    { time: "14:00", event: "開車南下返回英格蘭，前往紐卡斯爾（車程約 2 小時 18 分鐘）", type: "transport" },
+                    { time: "16:30", event: "漫步格雷街，欣賞保存完整的喬治式弧形石造建築與格雷紀念柱", type: "activity" },
+                    { time: "18:30", event: "在格蘭傑市場（Grainger Market）漫步，體驗當地居民樸實熱鬧的生活氣息", type: "activity" }
+                ]
+            },
+            {
+                day: 6, date: "7/9 (四)", area: "約克郡", title: "走進斜角巷的靈感發源地",
+                highlights: "探訪融合羅馬與維京遺跡的約克古城，走在哈利波特取景地肉舖街與石頭街。",
+                accommodation: "St James Hotel, Nottingham",
+                mapLink: "https://www.google.com/maps/search/The+Shambles+York",
+                svgType: "church",
+                images: [
+                    { title: "約克大教堂", url: "https://docs.google.com/drawings/d/e/2PACX-1vSpRLJBTLUu79yGOMb1E_3kk-ftvXlo2EBtyNsN2VEMnUHagtoPmIwpr8zfWxwSDPRYL3u04R7koDTN/pub?w=960&h=720" },
+                    { title: "約克斜角巷 (肉舖街)", url: "https://docs.google.com/drawings/d/e/2PACX-1vS4RISReFI8NVr_3Lg4sshYThw65GOO8N3YVQMkmhM9NxN_aeoiff1qxAuLYcAmrjaferZ9s0FB_y2-/pub?w=960&h=720" }
+                ],
+                historyTitle: "⚔️ 約克：中世紀大教堂與哈利波特對角巷原型",
+                historyIntro: "約克是英格蘭最偉大的歷史古城。羅馬人、撒克遜人與維京人都在此留下足跡。宏偉的約克大教堂（York Minster）是英格蘭最大的中世紀主教教堂。古老的「肉舖街 (The Shambles)」是全歐保存最完好的中世紀街道，房屋二樓向街心傾斜，是哈利波特「斜角巷」的原型。",
+                timeline: [
+                    { time: "09:00", event: "驅車南下前往約克 York (車程約 2 小時)", type: "transport" },
+                    { time: "11:30", event: "登上約克城牆（York City Walls）漫步，俯瞰壯麗的約克大教堂", type: "activity" },
+                    { time: "14:00", event: "走入魔幻的肉舖街，探訪古老的石頭街（Stonegate）與精美小店", type: "activity" },
+                    { time: "16:30", event: "傍晚開車前往羅賓漢的綠林故鄉諾丁漢 (車程約 2 小時)", type: "transport" }
+                ]
+            },
+            {
+                day: 7, date: "7/10 (五)", area: "購物日", title: "文學城與精品折扣村",
+                highlights: "早晨感受諾丁漢的歷史氛圍，下午在比斯特折扣城 Bicester Outlet 愉快購物。",
+                accommodation: "Holiday Inn Express – Bicester by IHG",
+                mapLink: "https://www.google.com/maps/search/Bicester+Village",
+                svgType: "shopping",
+                images: [
+                    { title: "Nottingham 羅賓漢", url: "https://docs.google.com/drawings/d/e/2PACX-1vSbe4lSyDo86IbnhMJf_UfcgWFzCXuKw4Nw85jweQtSWsuHQV7k5QWFprwS9fNJmGP6bF-oiceYdUqw/pub?w=960&h=720" },
+                    { title: "Bicester Village 購物村", url: "https://docs.google.com/drawings/d/e/2PACX-1vQaYTVLbsYZ_-Xoy172rxhw5jswArh5ivthwew7hzmebXoVY4khOpuRIOQmqL3OtRFtDmAn4sSSc3P7/pub?w=960&h=720" }
+                ],
+                historyTitle: "🏹 諾丁漢的羅賓漢傳奇與比斯特現代時尚",
+                historyIntro: "諾丁漢以傳奇俠盜羅賓漢與雪伍德森林聞名，也是聯合國教科文組織評選的「文學之城」。下午造訪的比斯特購物村（Bicester Village）則是全球最享譽盛名的戶外奢華時尚折扣勝地，將現代時尚與傳統英式莊園的典雅風格結合。",
+                timeline: [
+                    { time: "09:30", event: "在諾丁漢市中心漫步，尋找羅賓漢銅像與古老城堡遺跡", type: "activity" },
+                    { time: "13:00", event: "開車前往購物村比斯特 Bicester Outlet (車程約 2 小時)", type: "transport" },
+                    { time: "15:00", event: "抵達比斯特購物村，開啟全家精品與英倫服飾選購時間", type: "activity" },
+                    { time: "19:00", event: "入住 Outlet 附近極便利的精緻商務飯店，整理戰利品", type: "food" }
+                ]
+            },
+            {
+                day: 8, date: "7/11 (六)", area: "倫敦近郊", title: "溫莎城堡與抵達倫敦",
+                highlights: "參觀溫莎城堡，結束 8 天自駕公路旅行，辦理還車手續並轉移至倫敦機場飯店暫宿。",
+                accommodation: "Leonard London Heathrow Airport",
+                mapLink: "https://www.google.com/maps/search/Windsor+Castle",
+                svgType: "crown",
+                images: [
+                    { title: "溫莎城堡", url: "https://docs.google.com/drawings/d/e/2PACX-1vSHoZ3UUsiZG7vQpZ3XQnDzGak-f7puKhB6MwFtXL7aFfg60An_szPy8z-qdyajDUWOJuOSo-Q-J6J-/pub?w=960&h=720" }
+                ],
+                historyTitle: "👑 溫莎城堡：不墜的千年皇家要塞",
+                historyIntro: "溫莎城堡是世界上有人居住的城堡中歷史最悠久、規模最大的一座。自 11 世紀征服者威廉建城以來，近千年間一直是英國君主的家。這裡擁有華麗的聖喬治禮拜堂，見證了英國歷史的無數榮耀瞬間。",
+                timeline: [
+                    { time: "10:00", event: "開車前往古老的溫莎小鎮 (車程約 1 小時)", type: "transport" },
+                    { time: "11:00", event: "進入溫莎城堡，參觀高聳的圓塔，漫步壯麗的城堡廣場", type: "activity" },
+                    { time: "16:00", event: "開車前往希斯洛機場還車櫃檯，順利辦理還車手續並結清租車費用", type: "transport" },
+                    { time: "18:00", event: "入住機場 Leonard 飯店休息，核對明日進入倫敦市中心的大眾交通系統與卡片設定", type: "alert" }
+                ]
+            },
+            {
+                day: 9, date: "7/12 (日)", area: "倫敦市區", title: "經典皇家與泰晤士精華",
+                highlights: "正式入住倫敦！上午參觀古老宏偉的倫敦塔，下午漫步倫敦塔橋，隨後體驗泰晤士河遊船，並在夕陽微風中登頂倫敦眼。",
+                accommodation: "ibis London City – Shoreditch",
+                mapLink: "https://www.google.com/maps/search/Tower+of+London",
+                svgType: "bridge",
+                images: [
+                    { title: "倫敦塔", url: "https://docs.google.com/drawings/d/e/2PACX-1vSKRZM2B42WJgC3bUnm_hnl-dBB7f8-hNLl1j9CRjVh7j0WevQYZR7i5vj-TqauG1vKGphTuDLaoRQ8/pub?w=960&h=720" },
+                    { title: "倫敦眼", url: "https://docs.google.com/drawings/d/e/2PACX-1vTYDUqR_16iq9dGQ8-PYVHKCSgaLgFZhGJYGCDg7363kK982Qpdy7TFvi4pM0JwG-i7aAwE5lvKSRri/pub?w=960&h=720" },
+                    { title: "倫敦塔橋", url: "https://docs.google.com/drawings/d/e/2PACX-1vTQGSDC7Zm1P27a4sptT4FnRyMTcQSaiUfoKuKJ9r638iVywfPJ2mMUStejGY_Y1r-caAs5Mk8TDgvB/pub?w=960&h=720" },
+                    { title: "🎬 蜘蛛人：離家日劇照", url: "https://docs.google.com/drawings/d/e/2PACX-1vQmWqyuXYMZb7IXKgrEdZpJTx4X45yy_5j31xhRb7aACc7w8ye6ECezgmG1IHzXuMXOkJcM5HrC74tC/pub?w=960&h=720" }
+                ],
+                historyTitle: "⚔️ 倫敦塔與泰晤士明珠",
+                historyIntro: "倫敦塔自 1066 年興建起，見證了英國歷史的無數權力更迭，現今展示著無比華麗的皇家珠寶。而泰晤士河上的倫敦眼與歷史悠久的塔橋，是古老地標與現代建築在河流光影中的完美交融。此地亦是《蜘蛛人：離家日》中蜘蛛人大戰神祕法師無人機編隊的決戰背景。",
+                timeline: [
+                    { time: "10:00", event: "從機場飯店退房。在 Heathrow Terminal 3 站搭乘 Elizabeth Line (伊莉莎白線) 直達 Liverpool Street 站，出站步行 10 分鐘，抵達 ibis 飯店寄放行李", type: "transport" },
+                    { time: "10:30", event: "從飯店旁的 Aldgate East 站搭乘 District Line (區域線 - 綠線) 往西，搭乘 1 站於 Tower Hill 站下車，進入「倫敦塔」參觀皇家珍寶 (預定時段 10:30-11:00，票券 Ref: DVOG51UKVPZI3)", type: "activity" },
+                    { time: "13:00", event: "漫步跨越倫敦塔橋 (Tower Bridge) 欣賞壯麗江景，並在南岸特色餐館或市集享用午餐", type: "food" },
+                    { time: "15:00", event: "由 Tower Hill 站搭乘 District Line (綠線) 往西至 Westminster 站，步行過橋抵達倫敦眼碼頭 (London Eye Pier)", type: "transport" },
+                    { time: "15:45", event: "體驗 3:45 pm 泰晤士河遊船 (River Cruise)（票券 ID: 135296898，Order ID: 116083612）", type: "activity" },
+                    { time: "18:00", event: "登頂 6:00 pm 倫敦眼 (London Eye) 摩天輪 (標準票時段 18:00，票券 ID: 135296900，Order ID: 116083613)，飽覽夕陽下的西敏寺與大本鐘", type: "activity" },
+                    { time: "19:30", event: "於泰晤士河畔享用晚餐，搭乘地鐵 District Line 返回 Aldgate East 飯店休息", type: "transport" }
+                ],
+                mission: {
+                    title: "🕵️‍♂️ 皇家守衛與紅色電話亭尋寶",
+                    items: [
+                        "找到一位身穿紅色或深藍色製服、戴著圓頂禮帽的『倫敦塔衛兵 (Beefeater)』，並拍下他的身影（請保持禮貌喔！）",
+                        "在泰晤士河畔找到一個經典的『英式紅色電話亭 (K6 Telephone Box)』，母子三人一起合照一張！"
+                    ],
+                    bonus: "【守衛冷知識】倫敦塔衛兵英文叫 Beefeater（食牛肉者），傳說因為古代君主特許他們可以無限制享用國王餐桌上的牛肉而得名！"
+                }
+            },
+            {
+                day: 10, date: "7/13 (一)", area: "魔法之旅", title: "哈利波特影城朝聖日",
+                highlights: "搭乘專車接送往返利維斯登工作室，親眼見證霍格華茲魔法世界的原版拍攝場景與服裝道具設計。",
+                accommodation: "ibis London City – Shoreditch",
+                mapLink: "https://www.google.com/maps/search/Victoria+Coach+Station",
+                svgType: "wizard",
+                images: [
+                    { title: "哈利波特片場", url: "https://docs.google.com/drawings/d/e/2PACX-1vTIdwWxOf9qdEFcdFl9No4IljXK44oBbgi80rXz2Xu5MkUd6cgv_nFTunlMP9HHikC_hzIqR_rIDdHg/pub?w=960&h=720" }
+                ],
+                historyTitle: "⚡ 華納兄弟工作室：魔法背後的精湛匠人手藝",
+                historyIntro: "位於利維斯登的哈利波特工作室展示了電影歷時十餘年拍攝的真實原版場景、戲服、手工模型與機械道具。從鋪設著真實石板的霍格華茲大禮堂、鄧不利多的辦公室、到栩栩如生的斜角巷，凝聚了無數頂尖美術指導的心血。",
+                timeline: [
+                    { time: "08:10", event: "從飯店旁的 Aldgate East 站搭乘 District Line (區域線 - 綠線) 直達 Victoria 站 (共 10 站，車程約 20 分鐘)。出地鐵站後步行 7-10 分鐘前往長途客運總站", type: "transport" },
+                    { time: "09:00", event: "開車前往 Victoria Coach Station 總站報到（164 Buckingham Palace Road，Booking Ref: 3CANW18E）", type: "alert" },
+                    { time: "09:15", event: "Premium Tours 專車準時出發。車上不可攜帶熱食熱飲，直達哈利波特工作室", type: "transport" },
+                    { time: "11:00", event: "進入影城深度導覽，親身體驗九又四分之三月台、禁忌森林與對角巷場景", type: "activity" },
+                    { time: "17:00", event: "搭乘原專車返回倫敦市區。下車後搭乘 Circle Line (黃線) 至 Embankment 站，步行至柯芬園 (Covent Garden) 逛街與晚餐", type: "transport" }
+                ],
+                mission: {
+                    title: "⚡ 尋找 9¾ 月台與神奇奶油啤酒",
+                    items: [
+                        "在影城中找到巨大的『霍格華茲特快車』，並排隊拍下一張雙手推著半穿過牆壁行李車的魔法特寫照！",
+                        "買一杯冰涼的『奶油啤酒 (Butterbeer)』，喝完後拍一張嘴角留著白色奶泡的趣味照片！"
+                    ],
+                    bonus: "【魔法冷知識】奶油啤酒不含任何酒精成分，其獨特的香甜口感是由黑糖糖漿、香草、碳酸蘇打與特製的濃厚鮮奶油泡沫調配而成，深受各國麻瓜喜愛！"
+                }
+            },
+            {
+                day: 11, date: "7/14 (二)", area: "學術與天文", title: "本初子午線與劍橋撐篙",
+                highlights: "橫跨世界時間基準子午線，下午在康河上體驗浪漫撐篙、飽覽歷史悠久的國王學院。",
+                accommodation: "ibis London City – Shoreditch",
+                mapLink: "https://www.google.com/maps/search/King's+College+Cambridge",
+                svgType: "boat",
+                images: [
+                    { title: "格林威治天文臺", url: "https://docs.google.com/drawings/d/e/2PACX-1vTHB1zA9dVq4wYu9XdEVLD7NjBAtXioEMmlUL_372XrPiUCHQ9_JiZmS4HQ5T0e1fknTv4FFUkoJ64W/pub?w=960&h=720" }
+                ],
+                historyTitle: "🛶 子午線的起點與康橋的學術波光",
+                historyIntro: "格林威治天文台標記著地球的主子午線（GMT 0），確立了現代標準時間。而建校逾 800 年的劍橋大學則是人類學術殿堂 of 巔峰，國王學院壯麗的哥德式大教堂與康河，伴隨著百年撐篙傳統，展現了最極致的優雅。",
+                timeline: [
+                    { time: "07:30", event: "從 Aldgate East 站搭乘 District Line (綠線) 直達 Victoria 站，步行出站", type: "transport" },
+                    { time: "08:10", event: "抵達 Victoria Station 火車站外的 Stop 11 公車站牌集合報到（Booking Ref: XNJ075421）", type: "alert" },
+                    { time: "08:30", event: "專車出發前往第一站：格林威治皇家天文臺，踏在東西半球分界線上", type: "activity" },
+                    { time: "12:30", event: "下午專車抵達劍橋大學（University of Cambridge），由中文導遊帶領深度導覽", type: "activity" },
+                    { time: "14:00", event: "體驗康河撐篙（Punting），穿過數學橋與嘆息橋，在微風中享受康河風光", type: "activity" },
+                    { time: "15:30", event: "自由漫步聖三一學院，尋找啟發力學定理的『牛頓蘋果樹』", type: "activity" },
+                    { time: "19:30", event: "專車返回倫敦 Victoria Station，隨後搭乘地鐵 District Line 返回飯店", type: "transport" }
+                ],
+                mission: {
+                    title: "👑 東西半球大對決與尋找牛頓蘋果",
+                    items: [
+                        "在格林威治子午線金屬軌道上，拍下一張『left foot 在東半球、right foot 在西半球』的歷史性跨越照！",
+                        "在劍橋三一學院大門外，找出那株矮矮的、據說是傳承自啟發牛頓萬有引力的『牛頓蘋果樹』分支！"
+                    ],
+                    bonus: "【康橋冷知識】康河上的『數學橋』完全由直木樑和螺栓精準組合而成，呈現出完美的弧形，傳說它最初是由牛頓在不使用任何釘子的情況下拼裝出來的（雖然這只是美麗的傳奇，但極具幾何之美）！"
+                }
+            },
+            {
+                day: 12, date: "7/15 (三)", area: "知性與劇目", title: "人類文明與歌劇魅影",
+                highlights: "大英博物館 1 小時精華快閃，隨後前往西區劇院觀賞殿堂級音樂劇《歌劇魅影》，時間規劃精密流暢。",
+                accommodation: "ibis London City – Shoreditch",
+                mapLink: "https://www.google.com/maps/search/His+Majesty's+Theatre+London",
+                svgType: "museum",
+                images: [
+                    { title: "大英博物館", url: "https://docs.google.com/drawings/d/e/2PACX-1vTwKUUZ9r9vqZn94Fe1p0dY728I-VSSMTgHKMuROrWL_eHAKLWEctwfyoI_KjpR8CgWzfrGxqipyQRm/pub?w=960&h=720" }
+                ],
+                historyTitle: "🎭 大英帝國之寶與西區不朽樂章",
+                historyIntro: "大英博物館橫跨兩百萬年人類歷史，收藏羅塞塔石碑等無價瑰寶。而下午將前往「國王陛下劇院」，這裡自 1986 年起便是《歌劇魅影》的永久駐演地，安德魯・洛伊・韋伯的交響與舞台水晶燈奠定了其不朽地位。",
+                timeline: [
+                    { time: "09:30", event: "從飯店旁的 Aldgate East 站搭乘 District Line (綠線) 至 Embankment 站，隨後出站漫步至大英博物館", type: "transport" },
+                    { time: "10:45", event: "【精準抵達】大英博物館正門排隊並配合安全檢查（預約時段 10:50）", type: "alert" },
+                    { time: "10:55", event: "大英博物館 1 小時快閃黃金路線：羅塞塔石碑 ➔ 拉美西斯二世 ➔ 帕德嫩神廟 ➔ 摩艾石像 ➔ 雙頭蛇", type: "activity" },
+                    { time: "12:00", event: "準時從小正門離開大英博物館，避開大門口的人潮", type: "activity" },
+                    { time: "12:15", event: "【避堵移動】直接至 Tottenham Court Road 站搭 Northern Line (黑線) 或直達 Piccadilly / Leicester Square 周邊並在該區輕鬆享用午餐，省下趕路的時間壓力", type: "transport" },
+                    { time: "14:00", event: "抵達國王陛下劇院 (His Majesty's Theatre - 座位: Stalls Row T, 30-32) 拍照、使用洗手間", type: "alert" },
+                    { time: "14:30", event: "🎭 欣賞不朽音樂劇《歌劇魅影》 (時長 150 分鐘)", type: "activity" },
+                    { time: "17:30", event: "劇終散場，步行至鄰近的 Soho 區或中國城享用晚餐", type: "food" }
+                ],
+                mission: {
+                    title: "🔍 大英石碑解碼與劇院水晶吊燈",
+                    items: [
+                        "在大英博物館大中庭旁，找到著名的『羅塞塔石碑 (Rosetta Stone)』並觀察上面的三種不同古代文字！",
+                        "在劇院開演前 15 分鐘，抬頭尋找懸掛在觀眾席正上方、在故事中會驚悚墜落的『巨型水晶吊燈』！"
+                    ],
+                    bonus: "【劇院冷知識】《歌劇魅影》自 1986 年首演以來，劇中的巨型吊燈每一場都要在觀眾頭頂精準地『墜落』。這盞吊燈重達一噸，上面裝飾了超過 6000 顆仿製施華洛世奇水晶，機電操作極其繁複！"
+                }
+            },
+            {
+                day: 13, date: "7/16 (四)", area: "世界遺產", title: "巨石陣謎團與羅馬浴場",
+                highlights: "探尋索爾茲伯里平原上的史前石陣，下午走入典雅的巴斯古羅馬溫泉聖地，體驗經典英倫歷史與影視朝聖之旅。",
+                accommodation: "ibis London City – Shoreditch",
+                mapLink: "https://www.google.com/maps/search/Stonehenge",
+                svgType: "temple",
+                images: [
+                    { title: "神秘巨石陣", url: "https://docs.google.com/drawings/d/e/2PACX-1vQ3kx4A7HsrGUNAYPix4MaQDEFlTNaCzNoGTSkTqyErBHQ2yMlXi3PuAB07AE3HGkHTV7ItMzZuBzKW/pub?w=960&h=720" },
+                    { title: "🎬 變形金剛電影劇照", url: "https://docs.google.com/drawings/d/e/2PACX-1vTttp6fTmpNrbi2fV8xql7EQWqvXXF6IRSKBqxG9k2Wib7h4AB-2sCy_nwpsn8BHlIw1WpN2B7o2mgm/pub?w=960&h=720" },
+                    { title: "典雅巴斯古城", url: "https://docs.google.com/drawings/d/e/2PACX-1vTJ-csN-_OFbZhuwTkGCUHfvRwgpCi6Zvak0PkEABayPjkVUPR3qQloCogIxBgSb2_uFKq4T311USH9/pub?w=960&h=720" },
+                    { title: "🎬 柏捷頓家族：名門秘辛劇照", url: "https://docs.google.com/drawings/d/e/2PACX-1vRr54SN2HAaWmcryRuWy4pltryoGQZkkatd_UcKfCDpteBYJRiNTx8DQunOh1rl_e-X6gGJnl6vIeh5/pub?w=960&h=720" }
+                ],
+                historyTitle: "🏛️ 史前之謎與巴斯的古羅馬溫泉遺跡",
+                historyIntro: "巨石陣建於西元前 3000 年，薩森石重達數十噸，其建造目的仍是謎團。此地亦是《變形金剛5：最終騎士》的核心決戰地。而巴斯（Bath）則是不列顛唯一的天然溫泉勝地，古羅馬浴場極具震撼力。其保存完整的皇家新月樓與溫慢色調，更是Netflix熱門美劇《柏捷頓家族：名門秘辛》中上流社會奢華派對的拍攝主舞台。",
+                timeline: [
+                    { time: "07:20", event: "從飯店旁的 Aldgate East 站搭乘 District Line (綠線) 直達 Victoria 站，步行至長途客運總站", type: "transport" },
+                    { time: "08:00", event: "抵達客運總站「18號門 (Gate 18)」尋找 Premium Tours 工作人員（訂單號：CMU636083 / 憑證碼：SV4H4SNQ）", type: "alert" },
+                    { time: "08:15", event: "專車出發。前往平原上的神秘巨石陣，全家使用手機中文語音導覽參觀", type: "activity" },
+                    { time: "13:00", event: "抵達巴斯古城，下午深入參觀保留千年古羅馬雕像與溫泉遺跡的羅馬浴場 (Roman Baths)，漫步欣賞巴斯經典的喬治亞風格金色砂岩建築與皇家新月樓劇中場景", type: "activity" },
+                    { time: "19:30", event: "專車返回倫敦。於 Gloucester Road 地鐵站下車，直接搭乘 District Line (綠線 - 不需要轉車) 直達 Aldgate East 站返回飯店", type: "transport" }
+                ],
+                mission: {
+                    title: "🧩 史前密碼與古羅馬帝國的溫泉浴場",
+                    items: [
+                        "In the Stonehenge visitors' center, use your guide to find out where these 40-ton stones were transported from in prehistoric times.",
+                        "In the Roman Baths, look closely to find the steaming, green pool and locate the Roman emperor stone statues overlooking it from above."
+                    ],
+                    bonus: "【羅馬溫泉冷知識】巴斯羅馬浴場的泉水至今每天依然自然湧出超過一百萬公升，泉水溫度常年維持在攝氏 46 度。浴場的綠色不是髒汙，而是高溫下溫泉水 and 陽光照射下迅速繁殖的微藻喔！"
+                }
+            },
+            {
+                day: 14, date: "7/17 (五)", area: "自由採買", title: "柯芬園散步與百貨大進攻",
+                highlights: "原本週日的採購行程調整至週五！享受無營業時間限制的極致採購。上午悠閒漫步柯芬園看街頭表演，下午進攻 Selfridges 百貨買齊伴手禮、逛攝政街與品嚐正統英式三層下午茶。",
+                accommodation: "ibis London City – Shoreditch",
+                mapLink: "https://www.google.com/maps/search/Regent+Street+London",
+                svgType: "tea",
+                images: [
+                    { title: "柯芬園經典廣場", url: "https://docs.google.com/drawings/d/e/2PACX-1vS_7vFxCYNZ9vOmlXhyigdOLD3wzj7MG0p4OlO4OxY8vpL6LebbgDvzLwlcskRhag2xH5j8svKp9E04/pub?w=960&h=720" },
+                    { title: "牛津街/攝政街", url: "https://docs.google.com/drawings/d/e/2PACX-1vRjUcmgkX3cmZOHsZgI3TohcjvSonJyAU_h3KjhGCCNH9bc9YHawSWUI3tCdgIQgCxmO7iknyZWT9sI/pub?w=960&h=720" }
+                ],
+                historyTitle: "🍰 百貨大肆採購與英式下午茶儀式",
+                historyIntro: "下午預約的英式下午茶（Afternoon Tea）起源於 1840 年代，經典的三層架享用順序是由鹹到甜、由下至上：三明治、溫熱司康、最後是精緻甜點。由於今天是週五，大型百貨（如 Selfridges）與攝政街精品店均無週日限時 6 小時的營業限制，可以從容大肆採購！",
+                timeline: [
+                    { time: "10:00", event: "從 Aldgate East 站搭乘 District Line (綠線) 至 Embankment 站，出站步行至 Covent Garden (柯芬園) 悠閒散步，欣賞柯芬園內精彩的街頭音樂家與特技表演", type: "transport" },
+                    { time: "11:45", event: "從 Covent Garden 站搭乘 Piccadilly Line (深藍線) 至 Piccadilly Circus 站，轉乘 Bakerloo Line (棕線) 往北至 Oxford Circus (牛津圓環) 站下車，步行至 Selfridges 百貨，直奔地下食品館 (Foodhall) 採買 Fortnum & Mason 茶葉與伴手禮", type: "transport" },
+                    { time: "13:30", event: "漫步於圓弧建築宏偉的 Regent Street (攝政街) 與 Oxford Street 進行精品與服飾採購", type: "activity" },
+                    { time: "16:00", event: "進入預定好的經典英式下午茶沙龍，品嚐傳統英式司康、果醬與熱茶，放慢旅途步調", type: "food" },
+                    { time: "18:00", event: "搭乘地鐵 Central Line (紅線) 經 Oxford Circus 返回 Liverpool Street 站返回飯店休息", type: "transport" }
+                ],
+                mission: {
+                    title: "🍰 司康正確塗抹順序與 Selfridges 獵奇",
+                    items: [
+                        "體驗英式司康：切開司康，親自測試傳說中的兩種流派：『德文郡流派（奶油先塗，再抹果醬）』或『康瓦爾流派（果醬先抹，再蓋奶油）』，看看你們更喜歡哪一種！",
+                        "在 Selfridges 百貨裡找到它最著名的『經典亮黃色購物紙袋 (Bright Yellow Bag)』，並提著它在門口拍一張戰利品大合照！"
+                    ],
+                    bonus: "【下午茶冷知識】在正式的英式下午茶中，司康（Scone）千萬不可以用刀子『橫切』，而是要用雙手輕輕地從中間『掰開』。這在維多利亞時代是判斷一個家庭是否有教養的精緻社交小細節喔！"
+                }
+            },
+            {
+                day: 15, date: "7/18 (六)", area: "經典與震撼", title: "南岸漫步與《悲慘世界》",
+                highlights: "漫步波羅市場，下午在桑德海姆劇院觀看《悲慘世界》，夜晚登上空中花園俯瞰倫敦夜景。",
+                accommodation: "ibis London City – Shoreditch",
+                mapLink: "https://www.google.com/maps/search/Sondheim+Theatre+London",
+                svgType: "theatre",
+                images: [
+                    { title: "波羅市場美食集散地", url: "https://docs.google.com/drawings/d/e/2PACX-1vQ-8n0iz9uJ_X2nDHCybV5G7Ufshy5UYbjxymBX_NzQ1I3bjUPz2ufxCFRyYKkucPZ2RTacZ9HIxNNI/pub?w=960&h=720" },
+                    { title: "🎬 哈利波特：混血王子的背叛 (千禧橋)", url: "https://docs.google.com/drawings/d/e/2PACX-1vSBtoHFU9CpYGMnBjvTSWkElaxcgFz_Q_ZKfMCf5SvD9-vV2coBXO-UqlMSWxcbVV5HwB3SpoeIUoPt/pub?w=960&h=720" }
+                ],
+                historyTitle: "🥖 音樂劇之王《悲慘世界》與泰晤士南岸美食",
+                historyIntro: "波羅市場已有上千年的歷史。著名的千禧鋼鐵懸索人行橋（Millennium Bridge）是專為千禧年設計。此處更是電影《哈利波特：混血王子的背叛》開場中被食死人魔法瘋狂襲擊、扭曲並完全崩塌的著名地標。下午將在西區桑德海姆劇院欣賞不朽之作《悲慘世界》（Les Misérables），隨後於19:00前往 Walkie Talkie 大廈登顶空中花園。",
+                timeline: [
+                    { time: "10:00", event: "從 Aldgate East 站搭乘 District Line (綠線) 往西至 Monument 站。出站後步行穿過著名的倫敦大橋 (London Bridge)，抵達波羅市場 (Borough Market) 享用早午餐", type: "transport" },
+                    { time: "11:30", event: "漫步泰晤士河南岸，走過千禧橋 (Millennium Bridge) 感受《哈利波特》魔幻場景，飽覽河對岸壯麗的聖保羅大教堂大圓頂", type: "activity" },
+                    { time: "13:30", event: "搭乘地鐵至 Piccadilly Circus 站 (或從聖保羅 St. Paul's 站搭 Central Line 至 Holborn 轉 Piccadilly Line)。步行至桑德海姆劇院 (Sondheim Theatre - 座位: Dress Circle H6, H7, H8)", type: "transport" },
+                    { time: "14:30", event: "🎭 欣賞不朽巨作《悲慘世界》（Les Misérables）音樂劇（時長 3 小時，含有中場休息）", type: "activity" },
+                    { time: "18:00", event: "劇終散場，由 Leicester Square 站搭乘 Northern Line (黑線) 往南至 Embankment 站，轉乘 District Line (綠線) 返回 Monument 站。步行至金融城 Walkie Talkie 摩天大樓", type: "transport" },
+                    { time: "19:00", event: "登上預約好的免費 Sky Garden（空中花園）觀景台欣賞金融城璀璨夜景 (Booking Ref: 20260622-67793502，請務必攜帶個人身份證件和照片 ID 查驗)", type: "activity" }
+                ],
+                mission: {
+                    title: "🎬 悲慘世界小珂賽特與千禧橋對決",
+                    items: [
+                        "在 Sondheim Theatre 劇院大門前，找到《悲慘世界》中那個經典的『掃地女孩小珂賽特 (Cosette)』的海報，模仿她嚴肅的表情拍一張照片！",
+                        "站在千禧橋正中央，以對岸莊嚴的『聖保羅大教堂大圓頂』為背景，拍一張母子三人的英倫特寫！"
+                    ],
+                    bonus: "【音樂劇冷知識】《悲慘世界》自 1985 年在倫敦首演以來，已經翻譯成 22 種語言，是倫敦西區上演時間最長的音樂劇。其英文版的主題曲『I Dreamed a Dream』與『Do You Hear the People Sing?』更是傳唱全球！"
+                }
+            },
+            {
+                day: 16, date: "7/19 (日)", area: "博物館與設計", title: "南肯辛頓雙博物館深度慢遊全日行",
+                highlights: "原本週五的博物館行程調整至週日！完全不受《週日營業法》百貨商店限制的影響。全家深度慢遊。上午深度參觀自然史博物館與大藍鯨標本，下午專訪 V&A 藝術與設計博物館與精緻珠寶服飾展區。",
+                accommodation: "ibis London City – Shoreditch",
+                mapLink: "https://www.google.com/maps/search/Natural+History+Museum+London",
+                svgType: "dinosaur",
+                images: [
+                    { title: "自然史博物館", url: "https://docs.google.com/drawings/d/e/2PACX-1vTqBMVeHofvBugFdpd08RibmcXkZ4A_p9J5vIG1T_l1NHEx2wJzbq2huNFGSreHNs9FHeDZtAWDQquR/pub?w=960&h=720" },
+                    { title: "🎬 帕丁頓熊電影劇照", url: "https://docs.google.com/drawings/d/e/2PACX-1vRvnRlRzxjN1kJksf0XAsj65kN7gDXz-6n8ZaP-rg4zmjoxlZcxyKtrmvcgr0Yx5nRXgiQl8f6vPYy_/pub?w=960&h=720" }
+                ],
+                historyTitle: "🧬 藍鯨Hope宮殿與世界最美咖啡廳的奢華設計",
+                historyIntro: "南肯辛頓的自然史博物館天花板懸掛著 25 米的巨大藍鯨骨骸標本，是自然歷史的殿堂，也是電影《帕丁頓熊》中經典追逐的重要場景。而相鄰的 V&A 藝術與設計博物館則為世界頂尖的裝飾藝術聖殿，館內更擁有號稱『世界第一座最美博物館咖啡廳』，在維多利亞與亞伯特時代的瑰麗裝飾中享用午餐是極佳的人文體驗。",
+                timeline: [
+                    { time: "09:30", event: "從 Aldgate East 地鐵站搭乘 District Line (區域線 - 綠線) 直達 South Kensington 站，經地鐵站地下通道直接步行前往自然史博物館大廳", type: "transport" },
+                    { time: "10:00", event: "【3小時深度探索】參觀自然史博物館 (Natural History Museum)，盡情參觀藍鯨 Hope、恐龍廳機械暴龍、地球廳及演化花園", type: "activity" },
+                    { time: "13:00", event: "步行前往隔壁 V&A 博物館，走進華麗堂皇的 V&A Café，在古典彩繪玻璃與奢華裝飾下，享用精緻沙拉、麵包與咖啡輕食", type: "food" },
+                    { time: "14:00", event: "【3小時深度參觀】漫步 V&A 藝術與設計博物館 (Victoria and Albert Museum)，重點欣賞石膏模型廳大衛像複製品、英國藝廊珠寶家具，以及精緻的歷代服飾演變展區", type: "activity" },
+                    { time: "17:30", event: "在 South Kensington 地鐵站搭乘 District Line (綠線 - 一車直達免轉乘) 返回 Aldgate East 地鐵站，回飯店周邊享用豐盛的東倫敦晚餐", type: "transport" }
+                ],
+                mission: {
+                    title: "🦕 尋找大藍鯨與大衛像石膏模型",
+                    items: [
+                        "在自然史博物館正門大廳，抬頭拍下那具懸掛在空中、令人屏息的『巨型藍鯨骨骼標本 Hope』！",
+                        "在 V&A 博物館一樓的『石膏模型廳 (Cast Courts)』中，找到那座巨大的『大衛像複製品』並合影留念！"
+                    ],
+                    bonus: "【藍鯨冷知識】大廳這具長達 25 米的藍鯨標本名為『Hope（希望）』，它是一隻於 1891 年在愛爾蘭海岸擱淺的真實藍鯨。將其懸掛於大廳，旨在提醒每一位參觀者珍惜生命的多樣性與環境保護！"
+                }
+            },
+            {
+                day: 17, date: "7/20 (一)", area: "賦歸", title: "最後巡禮與安全返台路線",
+                highlights: "行李寄存後漫步 Shoreditch 街區。前進 Rivington Street 的 Cargo Club 中庭搜尋傳奇大師 Banksy (班克斯) 真跡，並在紅磚巷欣賞塗鴉藝術，享用 Poppy’s 炸魚薯條後搭乘無延誤伊莉莎白線直赴機場。",
+                accommodation: "機上",
+                mapLink: "https://www.google.com/maps/search/Rivington+Street+Shoreditch+London",
+                svgType: "plane",
+                historyTitle: "🎨 東倫敦塗鴉、Banksy真跡與 Poppy's 炸魚薯條",
+                historyIntro: "東倫敦 Shoreditch 是全球街頭塗鴉的麥加聖殿，其中 Rivington Street 的 Cargo Club 遺址中庭，保留了世界著名的匿名塗鴉藝術家班克斯 (Banksy) 早期真跡作品《Police & Poodle》以及《Guard Dog》，外面有壓克力玻璃保護防止破壞。而 Spitalfields 市集旁的 Poppy's Fish & Chips 則曾獲選全倫敦最好吃的傳統魚薯名店，為本次英倫之旅畫上最完美的句點。",
+                timeline: [
+                    { time: "10:00", event: "辦理飯店退房。步行 5 分鐘至 Liverpool Street 車站寄物處 (Left Luggage) 辦理大件行李寄存，騰出雙手展開東倫敦探索", type: "alert" },
+                    { time: "10:30", event: "【尋找 Banksy 路線】走入 Shoreditch 街區漫步至 Rivington Street，進入原 Cargo Club 中庭，親自搜尋牆面上被玻璃防護包覆的 Banksy 經典原作《Police & Poodle》與《Guard Dog》塗鴉", type: "activity" },
+                    { time: "11:15", event: "漫步轉往鄰近的紅磚巷 (Brick Lane)，欣賞滿街五彩繽紛的世界級噴繪、黏貼與巨幅壁畫創作，感受東倫敦反叛且充滿藝術生機的都市靈魂", type: "activity" },
+                    { time: "12:00", event: "步行 10 分鐘，前往 Spitalfields 市集旁的 Poppy's Fish & Chips Spitalfields 分店，享用招牌現炸鱈魚與金黃薯條作為告別午餐", type: "food" },
+                    { time: "14:30", event: "步行 5 分鐘返回 Liverpool Street 車站提取行李。在 Liverpool Street 直接搭乘全新、附空調且無階梯的 Elizabeth Line (伊莉莎白線 - 紫線) 一車直達 Heathrow Terminal 3 機場站 (車程約 45 分鐘，避開普通地鐵大延誤的隱憂)", type: "transport" },
+                    { time: "17:30", event: "抵達機場 Terminal 3，輕鬆辦理大件行李託運，於免稅店進行最後採購", type: "alert" },
+                    { time: "21:10", event: "搭乘華航 CI 82 班機（座位: 31E, 31D, 31G），平穩舒適返台", type: "transport" }
+                ],
+                mission: {
+                    title: "🎨 搜尋 Banksy 神級塗鴉大作",
+                    items: [
+                        "在 Rivington Street 的中庭防護牆上，成功找到傳奇大師 Banksy 的兩幅真跡《Police & Poodle》與《Guard Dog》，並與真跡同框合影留念！",
+                        "在紅磚巷找到一幅『色彩最絢麗或包含趣味圖案』的街頭大壁畫，母子三人模仿牆上動作合照一張！"
+                    ],
+                    bonus: "【班克斯冷知識】班克斯 (Banksy) 是當今世界上最具神祕色彩的街頭藝術家，至今仍無人知曉他的真實姓名與長相。他的塗鴉常以嘲諷、幽默的方式批判社會，作品價值動輒高達數百萬英鎊，而 Rivington Street 上的真跡是倫敦少數被玻璃罩完美保護至今的街頭原作！"
+                }
+            }
+        ];
+
+        // Custom High-Quality SVG Icons for Travel Themes
+        const TravelIllustration = ({ type }) => {
+            const baseClass = "w-full h-full flex items-center justify-center bg-gradient-to-br";
+            
+            if (type === "cottage") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                            <polyline points="9 22 9 12 15 12 15 22" />
+                            <path d="M9 17h6M12 2v3M4 12h3M17 12h3" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "castle" || type === "fortress") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M2 20h20M4 20V10l3-3V4h3v3h4V4h3v3l3 3v10M12 14v6M10 10h4" strokeLinecap="round" />
+                            <rect x="5" y="13" width="2" height="3" rx="1" />
+                            <rect x="17" y="13" width="2" height="3" rx="1" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "boat") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M22 17H2l2-7h16z" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M12 10V2M12 4l6 4-6 1" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M4 20c3 0 5-2 8-2s5 2 8 2" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "bridge") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M3 11c6-6 12-6 18 0M3 17h18" strokeLinecap="round" />
+                            <path d="M6 11v6M18 11v6M12 9v8M2 14c3-1 6-1 10 0s7 1 10 0" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "church" || type === "temple") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M12 2v6M12 4H9M12 4h3" strokeLinecap="round" />
+                            <path d="M4 22V11l8-6 8 6v11H4z" />
+                            <path d="M10 16h4v6h-4v-6z" strokeLinecap="round" />
+                            <circle cx="12" cy="11" r="1.5" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "shopping") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18" strokeLinecap="round" />
+                            <path d="M16 10a4 4 0 0 1-8 0" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "crown") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M3 20h18M5 17h14" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "wizard") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M12 3L3 17h18L12 3zM12 11h.01M9 15h6" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M19 8l2-2M5 8L3 6M12 1v2" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "museum") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M4 22V10h16v12H4z" />
+                            <path d="M2 10l10-6 10 6" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M6 10v12M10 10v12M14 10v12M18 10v12" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "dinosaur") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M16 3h5v3h-5zM11 6h5v4h-5z" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M3 18c2-2 4-5 8-5h6a4 4 0 0 0 4-4V6c0-2-1.5-3-3.5-3h-2C14 3 13.5 4 13 5H9c-2.5 0-4 1.5-4 4s1.5 3.5 3 3.5M7 13v6M17 13v6M12 13v6" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "theatre") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M2 18h20V6H2v12z" strokeLinecap="round" />
+                            <path d="M6 6c0 4 3 8 6 8s6-4 6-8" strokeLinecap="round" />
+                            <path d="M2 12c4 1 8 1 10 0s6-1 10 0" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "tea") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M18 8h1a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3h-1" strokeLinecap="round" />
+                            <path d="M2 8h16v7a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" />
+                            <path d="M6 2v3M10 2v3M14 2v3" strokeLinecap="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            if (type === "plane") {
+                return (
+                    <div className={`${baseClass} from-slate-100 to-indigo-50 text-indigo-900`}>
+                        <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M21 16V8a2 2 0 0 0-2-2h-3L10 2H8v4H5L3 5H2v3l2 2v2l-2 2v3h1l2-1h3v4h2v-4l6-4h3a2 2 0 0 0 2-2z" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </div>
+                );
+            }
+            return (
+                <div className={`${baseClass} from-slate-100 to-slate-200 text-slate-800`}>
+                    <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState("guide");
+            const [selectedDay, setSelectedDay] = useState(8); // Default to London Day 9 (index 8)
+            const [modalContent, setModalContent] = useState(null);
+            const [completedMissions, setCompletedMissions] = useState({});
+            const [activeImageIndexes, setActiveImagesIndexes] = useState({});
+
+            const handleDaySelect = (index) => {
+                setSelectedDay(index);
+                setActiveTab("itinerary");
+            };
+
+            const toggleMissionItem = (dayNum, itemIdx) => {
+                const key = dayNum + "-" + itemIdx;
+                const newStatus = Object.assign({}, completedMissions, { [key]: !completedMissions[key] });
+                setCompletedMissions(newStatus);
+
+                const dayObj = itineraryData.find(function(d) { return d.day === dayNum; });
+                const dayMission = dayObj ? dayObj.mission : null;
+                if (dayMission) {
+                    const allCompleted = dayMission.items.every(function(_, idx) {
+                        const checkKey = dayNum + "-" + idx;
+                        const isItemCompleted = (checkKey === key) ? !completedMissions[key] : !!completedMissions[checkKey];
+                        return isItemCompleted;
+                    });
+
+                    if (allCompleted) {
+                        setTimeout(function() {
+                            setModalContent({
+                                title: "🎉 今日特工任務圓滿達成！",
+                                text: "成功完成所有目標，解密下述倫敦趣味知識：",
+                                bonus: dayMission.bonus
+                            });
+                        }, 200);
+                    }
+                }
+            };
+
+            const switchImage = (dayNum, idx) => {
+                setActiveImagesIndexes(Object.assign({}, activeImageIndexes, { [dayNum]: idx }));
+            };
+
+            const currentDayObj = itineraryData[selectedDay];
+            const currentImgIdx = currentDayObj ? (activeImageIndexes[currentDayObj.day] || 0) : 0;
+
+            return (
+                <div className="max-w-md mx-auto md:max-w-3xl bg-slate-50 min-h-screen shadow-xl overflow-hidden relative flex flex-col border border-slate-200">
+                    {/* Header Banner - British Style with Crimson strip */}
+                    <div className="bg-white p-6 shadow-sm relative z-10 border-b-4 border-red-600">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h1 className="text-xl md:text-3xl font-extrabold mb-1 flex items-center tracking-wide font-serif british-navy-text">
+                                    <span className="british-crimson-text mr-2.5">🇬🇧</span>
+                                    英倫母子三人深度自由行隨身手冊
+                                </h1>
+                                <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
+                                    <span>Union Jack Digital Pocket Guide</span>
+                                    <span className="w-1.5 h-1.5 bg-red-600 rounded-full animate-pulse"></span>
+                                    <span className="british-navy-text font-mono">7/4 - 7/20</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Navigation Tabs - Light Styled Colors with Red underline */}
+                    <div className="flex border-b bg-white sticky top-0 z-20 shadow-sm">
+                        <button 
+                            onClick={() => setActiveTab("guide")}
+                            className={"flex-1 py-4 text-xs md:text-sm font-bold transition-all text-center border-r border-slate-100 " + (activeTab === 'guide' ? 'tab-active bg-slate-50/50' : 'tab-inactive hover:bg-slate-50')}
+                        >
+                            <i className="fas fa-file-invoice mr-1.5 british-crimson-text"></i>證件機票 & 交通超市攻略
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab("itinerary")}
+                            className={"flex-1 py-4 text-xs md:text-sm font-bold transition-all text-center " + (activeTab === 'itinerary' ? 'tab-active bg-slate-50/50' : 'tab-inactive hover:bg-slate-50')}
+                        >
+                            <i className="fas fa-map-marked-alt mr-1.5 british-crimson-text"></i>每日詳細行程
+                        </button>
+                    </div>
+
+                    {/* Content Area - Light Background Theme */}
+                    <div className="p-4 bg-slate-50 flex-grow">
+                        
+                        {/* Guide Tab */}
+                        {activeTab === "guide" && (
+                            <div className="space-y-5 animate-fade-in pb-8">
+                                
+                                {/* Flight Details Panel */}
+                                <div className="bg-white rounded-2xl shadow-md p-5 border border-slate-200 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 opacity-[0.03] text-8xl m-[-15px] pointer-events-none">
+                                        <i className="fas fa-plane"></i>
+                                    </div>
+                                    <h3 className="text-sm font-black british-navy-text mb-3.5 flex items-center font-serif border-b border-slate-100 pb-2">
+                                        <i className="fas fa-plane-departure mr-2 british-crimson-text"></i>
+                                        中華航空往返機票與指定座位
+                                    </h3>
+                                    <div className="space-y-4 divide-y divide-slate-100">
+                                        <div className="text-xs">
+                                            <div className="font-bold text-slate-800 flex justify-between">
+                                                <span>去程航班：{flightData.outbound.flight}</span>
+                                                <span className="text-emerald-600 font-semibold flex items-center"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span>已確認 OK</span>
+                                            </div>
+                                            <p className="text-slate-500 mt-1">{flightData.outbound.route}</p>
+                                            <p className="text-slate-500 font-mono">{flightData.outbound.time}</p>
+                                            <div className="mt-2.5 flex gap-2 flex-wrap">
+                                                {flightData.outbound.seats.map((s, idx) => (
+                                                    <span key={idx} className="bg-slate-50 text-slate-700 px-2 py-1.5 rounded-lg border border-slate-200">
+                                                        {s.name.split(' ')[0]}：<strong className="british-crimson-text">{s.seat}</strong>
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="pt-4 text-xs">
+                                            <div className="font-bold text-slate-800 flex justify-between">
+                                                <span>回程航班：{flightData.inbound.flight}</span>
+                                                <span className="text-emerald-600 font-semibold flex items-center"><span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span>已確認 OK</span>
+                                            </div>
+                                            <p className="text-slate-500 mt-1">{flightData.inbound.route}</p>
+                                            <p className="text-slate-500 font-mono">{flightData.inbound.time}</p>
+                                            <div className="mt-2.5 flex gap-2 flex-wrap">
+                                                {flightData.inbound.seats.map((s, idx) => (
+                                                    <span key={idx} className="bg-slate-50 text-slate-700 px-2 py-1.5 rounded-lg border border-slate-200">
+                                                        {s.name.split(' ')[0]}：<strong className="british-crimson-text">{s.seat}</strong>
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Accommodations Panel */}
+                                <div className="bg-white rounded-2xl shadow-md p-5 border border-slate-200 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 opacity-[0.03] text-8xl m-[-15px] pointer-events-none">
+                                        <i className="fas fa-hotel"></i>
+                                    </div>
+                                    <h3 className="text-sm font-black british-navy-text mb-3.5 flex items-center font-serif border-b border-slate-100 pb-2">
+                                        <i className="fas fa-bed mr-2 british-crimson-text"></i>
+                                        自駕段與倫敦段住宿清單
+                                    </h3>
+                                    <div className="space-y-3 max-h-72 overflow-y-auto pr-1 hide-scrollbar divide-y divide-slate-100">
+                                        {accommodationData.map((h, idx) => (
+                                            <div key={idx} className={"text-xs pt-3 " + (idx === 0 ? "pt-0" : "")}>
+                                                <div className="flex justify-between font-bold text-slate-800 mb-1">
+                                                    <span>{h.name}</span>
+                                                    <span className="british-crimson-text font-mono text-[10px]">{h.date}</span>
+                                                </div>
+                                                <p className="text-slate-600 mb-1 flex items-start gap-1">
+                                                    <i className="fas fa-map-marker-alt british-crimson-text mt-0.5"></i>
+                                                    <span>{h.address}</span>
+                                                </p>
+                                                <p className="text-slate-500 text-[11px] italic">{h.details}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Major Confirmed Tickets Reference */}
+                                <div className="bg-white rounded-2xl shadow-md p-5 border border-slate-200">
+                                    <h3 className="text-sm font-black british-navy-text mb-3.5 flex items-center font-serif border-b border-slate-100 pb-2">
+                                        <i className="fas fa-receipt mr-2 british-crimson-text"></i>
+                                        景點與音樂劇門票確認明細 (Booking Ref)
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {ticketData.map((t, idx) => (
+                                            <div key={idx} className="text-xs bg-slate-50/50 p-3 rounded-xl border border-slate-200">
+                                                <div className="flex justify-between items-start mb-2">
+                                                    <span className="british-crimson-bg text-white font-bold px-2 py-0.5 rounded text-[10px] tracking-wider">{t.date}</span>
+                                                    <span className="font-bold british-navy-text font-mono">Ref: {t.ref}</span>
+                                                </div>
+                                                <div className="font-bold text-slate-800 mb-1">{t.name}</div>
+                                                <div className="text-slate-600 space-y-0.5">
+                                                    <div><i className="far fa-clock mr-1.5 text-slate-400"></i>{t.time} ({t.provider})</div>
+                                                    <div><i className="fas fa-map-marker-alt mr-1.5 text-slate-400"></i>{t.location}</div>
+                                                    <div className="text-slate-700 font-medium mt-1.5 bg-slate-100/80 p-2 rounded-lg">{t.details}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* London Supermarkets & Grocery Quick Meals Guide */}
+                                <div className="bg-white rounded-2xl shadow-md p-5 border border-slate-200">
+                                    <h3 className="text-sm font-black british-navy-text mb-3.5 flex items-center font-serif border-b border-slate-100 pb-2">
+                                        <i className="fas fa-shopping-basket mr-2 british-crimson-text"></i>
+                                        超市與快速簡餐 (Grab & Go) 攻略
+                                    </h3>
+                                    <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                                        在市區行程中，善用當地的便利商店及連鎖超市，是節省時間與控制餐飲預算的最佳方案：
+                                    </p>
+                                    <div className="space-y-3">
+                                        <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs">
+                                            <div className="font-bold text-emerald-800 mb-1 flex items-center">
+                                                <span className="mr-1.5">🟢</span> Tesco Express & Sainsbury's Local
+                                            </div>
+                                            <p className="text-slate-600 leading-relaxed">
+                                                全倫敦最密集的平價超市。最推薦購買<strong>「Meal Deal」</strong>組合：一份主食（三明治/沙拉/捲餅）+ 一份零食（洋芋片/切片水果/起司）+ 一份飲品（果汁/可樂/冷飲），組合價僅約 £3.60 至 £4.50。
+                                            </p>
+                                        </div>
+                                        <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs">
+                                            <div className="font-bold text-amber-800 mb-1 flex items-center">
+                                                <span className="mr-1.5">🟡</span> Marks & Spencer (M&S) Simply Food
+                                            </div>
+                                            <p className="text-slate-600 leading-relaxed">
+                                                中高端超市，食物品質極高。其熟食冷藏櫃內的三明治、煙燻鮭魚沙拉、和自產水果盒極為新鮮美味，每日現烤烘焙區的司康與牛角麵包也是一流的點心選擇。
+                                            </p>
+                                        </div>
+                                        <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 text-xs">
+                                            <div className="font-bold text-red-800 mb-1 flex items-center">
+                                                <span className="mr-1.5">🔴</span> Pret A Manger
+                                            </div>
+                                            <p className="text-slate-600 leading-relaxed">
+                                                全倫敦隨處可見的有機咖啡連鎖店。提供高品質的熱包夾、法式長棍三明治（Baguette）、以及多種濃郁的熱湯（如經典番茄濃湯），是午間快速充電的極佳選擇。
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Transit Guide */}
+                                <div className="bg-white rounded-2xl shadow-md p-5 border border-slate-200">
+                                    <h3 className="text-sm font-bold british-navy-text mb-3 flex items-center font-serif border-b border-slate-100 pb-2">
+                                        <i className="fas fa-subway mr-2 british-crimson-text"></i>
+                                        🚇 倫敦大眾交通卡及省錢要領
+                                    </h3>
+                                    <div className="space-y-3 text-xs text-slate-600 leading-relaxed">
+                                        <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
+                                            <strong className="british-navy-text">媽媽 (Contactless 卡支付)</strong><br />
+                                            直接使用具感應功能信用卡或 Apple Pay 感應乘車，系統自動依每日乘車上限 (Daily Cap) 進行最優化計費。
+                                        </div>
+                                        <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
+                                            <strong className="british-crimson-text">哥哥 & 妹妹 (Oyster Card 青年折扣卡)</strong><br />
+                                            抵達地鐵站後，於自動售票機為兩位青少年購妥實體 Oyster Card，並立即尋求車站站務人員協助，當場設定 <strong>「Young Visitor Discount (青年半價優惠)」</strong>。設定後，11-15 歲青少年搭乘所有地鐵、電車及巴士均直接享有 <strong>5 折優惠</strong>（效期 14 天）。
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Sunday Trading Law Note */}
+                                <div className="bg-white rounded-2xl shadow-md p-5 border border-red-200 bg-red-50/30">
+                                    <h3 className="text-sm font-bold british-crimson-text mb-2 flex items-center font-serif">
+                                        <i className="fas fa-clock mr-2"></i>
+                                        週日營業時間特別限制 (Sunday Trading Act)
+                                    </h3>
+                                    <p className="text-slate-600 text-xs leading-relaxed">
+                                        根據英國《週日營業法》，營業面積大於 280 平方公尺的大型商店與連鎖百貨公司（例如牛津街上的大型 Selfridges 百貨及連鎖大型超市），在<strong>週日當天最多「只」能連續營業 6 小時</strong>（一般時段為 11:30/12:00 開始營業，並在 17:30/18:00 前打烊關閉）。因此，週日的購物與百貨行程必須集中於午後進行。
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Itinerary Tab */}
+                        {activeTab === "itinerary" && (
+                            <div className="animate-fade-in pb-8">
+                                {/* Horizontal Scroll Days */}
+                                <div className="flex overflow-x-auto hide-scrollbar gap-2 mb-4 pb-2 sticky top-[48px] bg-slate-50 pt-2 z-10 border-b border-slate-200">
+                                    {itineraryData.map((day, index) => (
+                                        <button 
+                                            key={index}
+                                            onClick={() => handleDaySelect(index)}
+                                            className={"flex-shrink-0 px-4 py-2.5 rounded-full text-xs font-bold transition-all " + (selectedDay === index ? 'british-crimson-bg text-white shadow-lg border border-red-500 transform scale-105' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100')}
+                                        >
+                                            Day {day.day} <span className="text-[10px] opacity-80 block">{day.date.split(' ')[0]}</span>
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Active Day Card */}
+                                {currentDayObj && (
+                                    <div className="space-y-4">
+                                        <div className="bg-white rounded-2xl shadow-md overflow-hidden border border-slate-200">
+                                            
+                                            {/* Photo Display Card with interactive tab if multiple photos exist */}
+                                            {currentDayObj.images && currentDayObj.images.length > 0 ? (
+                                                <div className="relative bg-slate-950">
+                                                    <div className="h-64 md:h-80 w-full relative bg-slate-900 flex items-center justify-center">
+                                                        <img 
+                                                            src={currentDayObj.images[currentImgIdx].url} 
+                                                            alt={currentDayObj.images[currentImgIdx].title} 
+                                                            className="w-full h-full object-cover transition-all duration-300"
+                                                            onError={function(e) { e.target.style.display = 'none'; }}
+                                                        />
+                                                        {/* Soft overlay gradient */}
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent pointer-events-none"></div>
+                                                    </div>
+
+                                                    {/* Image selector tabs */}
+                                                    <div className="absolute top-3 left-3 right-3 flex gap-2 overflow-x-auto hide-scrollbar z-20">
+                                                        {currentDayObj.images.map((img, idx) => (
+                                                            <button 
+                                                                key={idx}
+                                                                onClick={() => switchImage(currentDayObj.day, idx)}
+                                                                className={"px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all border whitespace-nowrap backdrop-blur-sm " + (currentImgIdx === idx ? "british-crimson-bg text-white border-red-500 shadow-md" : "bg-black/60 text-slate-300 border-white/10 hover:bg-black/80")}
+                                                            >
+                                                                {img.title}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
+                                                    {/* Day title & metadata overlay */}
+                                                    <div className="absolute bottom-0 left-0 right-0 p-4 z-10 text-white">
+                                                        <div className="flex items-center justify-between mb-1">
+                                                            <span className="british-crimson-bg text-white text-[9px] tracking-wider font-extrabold px-2 py-0.5 rounded">
+                                                                {currentDayObj.area}
+                                                            </span>
+                                                            <span className="text-xs text-amber-400 font-extrabold font-mono">
+                                                                {currentDayObj.date}
+                                                            </span>
+                                                        </div>
+                                                        <h2 className="text-lg md:text-xl font-bold leading-tight font-serif text-white">
+                                                            Day {currentDayObj.day}: {currentDayObj.title}
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                /* Fallback graphic section if no pictures available */
+                                                <div className="h-44 relative overflow-hidden">
+                                                    <TravelIllustration type={currentDayObj.svgType} />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent z-10 pointer-events-none"></div>
+                                                    <div className="absolute bottom-0 left-0 right-0 p-4 z-20 text-white">
+                                                        <div className="flex items-center justify-between mb-1">
+                                                            <span className="british-crimson-bg text-white text-[9px] tracking-wider font-extrabold px-2 py-0.5 rounded">
+                                                                {currentDayObj.area}
+                                                            </span>
+                                                            <span className="text-xs text-amber-400 font-bold">
+                                                                {currentDayObj.date}
+                                                            </span>
+                                                        </div>
+                                                        <h2 className="text-lg font-bold leading-tight font-serif text-white">
+                                                            Day {currentDayObj.day}: {currentDayObj.title}
+                                                        </h2>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            
+                                            <div className="p-5">
+                                                <p className="text-slate-600 text-sm leading-relaxed mb-4">
+                                                    {currentDayObj.highlights}
+                                                </p>
+                                                
+                                                <div className="grid grid-cols-2 gap-2 mb-5">
+                                                    <div className="flex items-center text-xs text-slate-700 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                                        <i className="fas fa-bed british-navy-text w-5 text-center"></i>
+                                                        <span className="font-semibold truncate">{currentDayObj.accommodation}</span>
+                                                    </div>
+                                                    <a href={currentDayObj.mapLink} target="_blank" className="flex items-center text-xs british-navy-text bg-blue-50 p-2.5 rounded-xl border border-blue-100 hover:bg-blue-100 transition font-bold">
+                                                        <i className="fas fa-map-marker-alt text-blue-600 w-5 text-center"></i>
+                                                        <span>開啟 Google Maps</span>
+                                                        <i className="fas fa-external-link-alt ml-auto text-[9px]"></i>
+                                                    </a>
+                                                </div>
+
+                                                {/* Special Highlight for Day 16 (South Kensington Museums 1-Hour Schedule) */}
+                                                {currentDayObj.day === 16 && (
+                                                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-5">
+                                                        <h4 className="text-xs font-bold british-navy-text mb-3 flex items-center font-serif">
+                                                            <span className="text-sm mr-1.5">⏱️</span>
+                                                            雙博物館黃金 1 小時特攻路線指南
+                                                        </h4>
+                                                        <div className="space-y-3">
+                                                            <div className="bg-white p-3 rounded-xl border border-slate-200">
+                                                                <div className="font-bold text-blue-600 text-xs mb-2 flex items-center">
+                                                                    <i className="fas fa-dinosaur mr-1.5"></i> 自然史博物館 一小時重點規劃
+                                                                </div>
+                                                                <ul className="space-y-1.5 text-[10px] text-slate-600 list-disc pl-4 leading-relaxed">
+                                                                    <li><strong className="british-navy-text">00-15 分鐘：</strong>中央大廳 (Hintze Hall) 觀賞巨大懸吊藍鯨骨骼標本 Hope。</li>
+                                                                    <li><strong>15-40 分鐘：</strong>恐龍廳 (Dinosaurs Gallery) 直接前往會動的機械暴龍 T. rex 核心區。</li>
+                                                                    <li><strong>40-55 分鐘：</strong>地球廳 (Earth Hall) 觀看極為完整的劍龍化石 Sophie。</li>
+                                                                    <li><strong>55-60 分鐘：</strong>出口處與梁龍 Fern 銅像合影後前往 V&A。</li>
+                                                                </ul>
+                                                            </div>
+                                                            <div className="bg-white p-3 rounded-xl border border-slate-200">
+                                                                <div className="font-bold text-rose-600 text-xs mb-2 flex items-center">
+                                                                    <i className="fas fa-gem mr-1.5"></i> V&A 藝術與設計博物館 一小時重點規劃
+                                                                </div>
+                                                                <ul className="space-y-1.5 text-[10px] text-slate-600 list-disc pl-4 leading-relaxed">
+                                                                    <li><strong>00-15 分鐘：</strong>石膏模型廳 (Cast Courts) 欣賞特拉揚柱與米開朗基羅大衛像複製品。</li>
+                                                                    <li><strong>15-35 分鐘：</strong>英國藝廊 (British Galleries) 觀賞華麗家具、皇室金銀珠寶工藝。</li>
+                                                                    <li><strong>35-50 分鐘：</strong>服裝展廳 (Fashion Gallery) 瀏覽歐洲歷代經典時尚與服飾演變。</li>
+                                                                    <li><strong>50-60 分鐘：</strong>進入 V&A Café (世界第一座博物館咖啡廳) 觀賞奢華的室內裝飾。</li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* History Section */}
+                                                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-5">
+                                                    <h4 className="text-xs font-bold british-navy-text mb-2 flex items-center font-serif">
+                                                        <span className="text-sm mr-1.5">📖</span>
+                                                        {currentDayObj.historyTitle}
+                                                    </h4>
+                                                    <p className="text-xs text-slate-600 leading-relaxed">
+                                                        {currentDayObj.historyIntro}
+                                                    </p>
+                                                </div>
+
+                                                <h3 className="font-bold text-slate-800 text-xs mb-3 border-b border-slate-200 pb-2 flex items-center">
+                                                    <i className="far fa-clock british-navy-text mr-2"></i>今日行程詳細明細
+                                                </h3>
+                                                <div className="relative border-l-2 border-slate-200 ml-3 space-y-4 pl-4">
+                                                    {currentDayObj.timeline.map((item, i) => {
+                                                        const icons = {
+                                                            transport: "fa-car-side text-blue-600 bg-blue-50",
+                                                            activity: "fa-camera text-emerald-600 bg-emerald-50",
+                                                            food: "fa-utensils text-amber-600 bg-amber-50",
+                                                            alert: "fa-exclamation-triangle text-red-600 bg-red-50"
+                                                        };
+                                                        return (
+                                                            <div key={i} className="relative">
+                                                                <div className="absolute -left-[24px] top-0.5 bg-white rounded-full p-0.5">
+                                                                    <div className="border border-slate-200 rounded-full w-5 h-5 flex items-center justify-center">
+                                                                        <i className={"fas " + icons[item.type].split(' ')[0] + " text-[9px] " + icons[item.type].split(' ')[1]}></i>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="text-[10px] font-bold text-slate-400 mb-0.5">{item.time}</div>
+                                                                <div className="text-xs text-slate-700 font-medium leading-relaxed">{item.event}</div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Sibling Mission Card - Deep British Navy Blue for High Contrast Accent */}
+                                        {currentDayObj.mission && (
+                                            <div className="british-navy-bg text-white rounded-2xl shadow-lg p-5 border border-slate-800 relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 opacity-10 text-6xl m-[-10px] text-white pointer-events-none">
+                                                    <i className="fas fa-user-secret"></i>
+                                                </div>
+                                                <div className="relative z-10">
+                                                    <div className="flex justify-between items-center mb-3 border-b border-blue-900 pb-2">
+                                                        <h3 className="font-bold text-sm flex items-center text-amber-400">
+                                                            <i className="fas fa-unlock-alt mr-2"></i> 
+                                                            {currentDayObj.mission.title}
+                                                        </h3>
+                                                        <span className="text-[9px] font-bold bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                                            特工現場任務
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-blue-200 mb-4 leading-relaxed">
+                                                        特工專屬任務。在旅途中偕同哥哥、妹妹，於現場達成以下目標，手動點擊核取方塊完成回報：
+                                                    </p>
+                                                    
+                                                    <div className="space-y-3">
+                                                        {currentDayObj.mission.items.map((item, idx) => {
+                                                            const key = currentDayObj.day + "-" + idx;
+                                                            const isChecked = !!completedMissions[key];
+                                                            return (
+                                                                <div 
+                                                                    key={idx}
+                                                                    onClick={() => toggleMissionItem(currentDayObj.day, idx)}
+                                                                    className={"flex items-start gap-3 p-3 rounded-xl border cursor-pointer transition-all " + (isChecked ? 'bg-emerald-950/40 border-emerald-500/50 text-emerald-100' : 'bg-slate-900/40 border-slate-700/50 hover:bg-slate-900/60 text-slate-100')}
+                                                                >
+                                                                    <div className="mt-0.5">
+                                                                        {isChecked ? (
+                                                                            <i className="fas fa-check-circle text-emerald-400 text-sm"></i>
+                                                                        ) : (
+                                                                            <i className="far fa-circle text-slate-500 text-sm"></i>
+                                                                        )}
+                                                                    </div>
+                                                                    <span className="text-xs leading-relaxed">{item}</span>
+                                                                </div>
+                                                            )
+                                                        })}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Custom Modal for Completing Missions - Light Themed Elegant styling */}
+                    {modalContent && (
+                        <div className="fixed inset-0 bg-black/55 flex items-center justify-center p-4 z-50 animate-fade-in">
+                            <div className="bg-white text-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 animate-pop">
+                                <div className="text-center mb-4">
+                                    <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl mb-3 border border-emerald-100">
+                                        <i className="fas fa-medal"></i>
+                                    </div>
+                                    <h3 className="text-lg font-bold british-navy-text font-serif">{modalContent.title}</h3>
+                                    <p className="text-xs text-slate-500 mt-1">{modalContent.text}</p>
+                                </div>
+                                <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-5 text-left">
+                                    <div className="text-xs font-bold british-navy-text flex items-center mb-2">
+                                        <i className="fas fa-info-circle mr-1.5 british-crimson-text"></i>
+                                        景點趣味背景冷知識
+                                    </div>
+                                    <p className="text-xs text-slate-600 leading-relaxed">
+                                        {modalContent.bonus}
+                                    </p>
+                                </div>
+                                <div className="flex gap-2">
+                                    <button 
+                                        onClick={() => setModalContent(null)}
+                                        className="w-full py-3 british-crimson-bg hover:bg-red-800 text-white rounded-full text-xs font-bold transition shadow-md border border-red-500"
+                                    >
+                                        解鎖完成 · 繼續旅程
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
